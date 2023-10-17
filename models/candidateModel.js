@@ -48,6 +48,13 @@ module.exports = (sequelize, DataTypes) => {
         //     type: DataTypes.TEXT
 
         // },
+        // createdBy: {
+        //     type: DataTypes.INTEGER
+        // }
+        // ,
+        // updatedBy: {
+        //     type: DataTypes.INTEGER
+        // }
 
 
     })

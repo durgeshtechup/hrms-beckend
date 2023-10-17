@@ -2,6 +2,7 @@ const db = require("../models")
 
 // create main model
 const Candidate = db.candidate
+const CandidateSkill = db.department
 
 // main work
 
@@ -47,9 +48,12 @@ const addCandidate = async (req, res) => {
 const getAllCandidates = async (req, res) => {
     try {
         let candidates = await Candidate.findAll()
+        let candidateSkills = await CandidateSkill.findAll()
+        // console.log("candidateSkills", candidateSkills)
         res.status(200).send({
             flag: true,
-            candidates
+            candidates,
+            candidateSkills
         })
 
     } catch (err) {

@@ -21,6 +21,13 @@ module.exports = (sequelize, DataTypes) => {
         roleId: {
             type: DataTypes.INTEGER
         },
+        // createdBy: {
+        //     type: DataTypes.INTEGER
+        // }
+        // ,
+        // updatedBy: {
+        //     type: DataTypes.INTEGER
+        // }
     })
 
     return User
