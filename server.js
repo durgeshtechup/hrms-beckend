@@ -1,20 +1,26 @@
-const express = require("express")
-const cors = require("cors")
+const express = require("express");
+const cors = require("cors");
 // const fileUpload = require("express-fileupload")
-const cloudinary = require("cloudinary")
-const bodyParser = require("body-parser")
-const cookieParser = require("cookie-parser")
-const path = require("path")
+const cloudinary = require("cloudinary");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const path = require("path");
 // const multer = require('multer')
-
-const app = express()
+const sequelize = require("./config/dbConfig");
+const PORT = process.env.PORT || 8088;
+const app = express();
 
 var corOptions = {
-    origin: "https://localhost:8081"
-}
+  origin: "https://localhost:8081",
+};
 
+// Models
+const { user, role, candidate } = require("./models/index");
 
-
+user.belongsTo(role);
+user.hasMany(candidate);
+// const candidatedocumentModel = require("./models/candidateDocumentModel");
+// const candidateModel = require("./models/candidateModel");
 //middleware
 // const __dirname = path.resolve();
 
@@ -31,12 +37,12 @@ var corOptions = {
 // })
 // const upload = multer({ storage: storage });
 
-app.use(cors(corOptions))
+app.use(cors(corOptions));
 // app.use(bodyParser.text({ type: '/' }));
-app.use(express.json())
-app.use(cookieParser())
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(express.urlencoded({ extended: true }))
 // app.use(fileUpload({
@@ -49,22 +55,20 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // app.use(morgan('dev'));
 
-
 cloudinary.config({
-    cloud_name: "dgiye4daz",
-    api_key: "449121857626744",
-    api_secret: "xzjwfM_K105S1wdd8e1PPOLoVX0"
+  cloud_name: "dgiye4daz",
+  api_key: "449121857626744",
+  api_secret: "xzjwfM_K105S1wdd8e1PPOLoVX0",
 });
 
-
 //routers
-const CandidateRouter = require("./routes/CandidateRouter")
-const StaffRouter = require("./routes/StaffRouter")
-const UserRouter = require("./routes/userRouter")
+const CandidateRouter = require("./routes/CandidateRouter");
+const StaffRouter = require("./routes/StaffRouter");
+const UserRouter = require("./routes/userRouter");
 
-app.use("/api/candidate", CandidateRouter)
-app.use("/api/staff", StaffRouter)
-app.use("/api/user", UserRouter)
+app.use("/api/candidate", CandidateRouter);
+app.use("/api/staff", StaffRouter);
+app.use("/api/user", UserRouter);
 
 // testing api
 
@@ -73,11 +77,20 @@ app.use("/api/user", UserRouter)
 
 // })
 
+// DataBase
 
-const PORT = process.env.PORT || 8088
+sequelize
+  .sync({ force: true })
+  // .sync()
+  .then((result) => {
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+    // console.log(result);
+  })
+
+  .catch((err) => {
+    console.log(err);
+  });
 
 //server
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`)
-})
