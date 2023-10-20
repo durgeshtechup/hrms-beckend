@@ -4,13 +4,15 @@ module.exports = (sequelize, DataTypes) => {
     const skill = sequelize.define("skills", {
 
         skillId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         technologyId: {
             type: DataTypes.INTEGER,
         },
         technology: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         }
 
     })

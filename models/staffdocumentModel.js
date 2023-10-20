@@ -4,16 +4,18 @@ module.exports = (sequelize, DataTypes) => {
     const Staffdocument = sequelize.define("staffdocument", {
 
         staffDocumentId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         employeCode: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         docPath: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         docName: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         createdBy: {
             type: DataTypes.INTEGER,

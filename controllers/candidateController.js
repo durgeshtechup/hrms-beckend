@@ -3,11 +3,14 @@ const db = require("../models")
 // create main model
 const Candidate = db.candidate
 const CandidateSkill = db.department
+const Candidatedocument = db.candidatedocument
+
+
 
 // main work
 
 //1. create candidate
-const addCandidate = async (req, res) => {
+const addCandidate = async (req, res, next) => {
     let info = {
         candidateId: req.body.candidateId,
         applicationNumber: req.body.applicationNumber,
@@ -23,14 +26,52 @@ const addCandidate = async (req, res) => {
         experience: req.body.experience,
         otherInfo: req.body.otherInfo,
     }
-    // console.log(info)
+
+
+
     try {
-        const candidate = await Candidate.create(info)
-        res.status(200).send({
-            flag: true,
-            candidate
-        })
-        console.log(candidate)
+        const { candidatePhoto, resume, others } = req.files
+        let candidatedocumentPhoto = {}
+        let candidatedocumentResume = {}
+        if (!candidatePhoto || !resume) {
+            return res.send({
+                success: false,
+                message: "Please upload all required files."
+            });
+
+        } else {
+
+
+            const candidate = await Candidate.create(info)
+            if (candidate?.candidateId > 0) {
+                candidatedocumentPhoto = await Candidatedocument.create({
+                    candidateId: candidate?.candidateId,
+                    fileType: "candidateImage",
+                    docName: candidatePhoto[0]?.filename,
+                    docPath: candidatePhoto[0]?.path
+                })
+                candidatedocumentResume = await Candidatedocument.create({
+                    candidateId: candidate?.candidateId,
+                    fileType: "candidateResume",
+                    docName: resume[0]?.filename,
+                    docPath: resume[0]?.path
+                })
+                res.status(200).send({
+                    flag: true,
+                    candidate,
+                    candidatedocumentPhoto,
+                    candidatedocumentResume
+
+                })
+            } else {
+                res.status(500).send({
+                    flag: false,
+                    message: "Something went wrong."
+                })
+            }
+
+
+        }
 
 
     } catch (error) {
@@ -53,7 +94,7 @@ const getAllCandidates = async (req, res) => {
         res.status(200).send({
             flag: true,
             candidates,
-            candidateSkills
+            // candidateSkills
         })
 
     } catch (err) {

@@ -4,48 +4,49 @@ module.exports = (sequelize, DataTypes) => {
     const Candidate = sequelize.define("candidate", {
         candidateId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true
+            autoIncrement: true,
+
+            primaryKey: true
         },
         applicationNumber: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         name: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
 
         },
         Contact: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         jobProfileId: {
             type: DataTypes.INTEGER
         },
         currentCTC: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         expectedCTC: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         location: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         isRelocate: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         reasonForJobChange: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         noticePeriod: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         experience: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         otherInfo: {
-            type: DataTypes.TEXT
-        },
+            type: DataTypes.STRING
+        }
         // email: {
-        //     type: DataTypes.TEXT
+        //     type: DataTypes.STRING
 
         // },
         // createdBy: {
@@ -58,6 +59,8 @@ module.exports = (sequelize, DataTypes) => {
 
 
     })
+
+
 
     return Candidate
 }

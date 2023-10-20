@@ -4,16 +4,22 @@ module.exports = (sequelize, DataTypes) => {
     const Candidatedocument = sequelize.define("candidatedocument", {
 
         candidateDocumentId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         candidateId: {
-            type: DataTypes.TEXT,
+            type: DataTypes.INTEGER,
+        },
+        fileType: {
+            type: DataTypes.STRING,
+
         },
         docPath: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         docName: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         createdBy: {
             type: DataTypes.INTEGER,

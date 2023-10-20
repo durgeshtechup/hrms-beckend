@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     const Candidatestatus = sequelize.define("candidatestatus", {
 
         candidateStatusId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         candidateId: {
             type: DataTypes.INTEGER,
@@ -13,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER
         },
         remark: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         createdBy: {
             type: DataTypes.INTEGER

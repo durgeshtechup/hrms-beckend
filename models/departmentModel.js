@@ -4,13 +4,15 @@ module.exports = (sequelize, DataTypes) => {
     const Department = sequelize.define("department", {
 
         departmentId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         profileId: {
             type: DataTypes.INTEGER,
         },
         profileName: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         createdBy: {
             type: DataTypes.INTEGER

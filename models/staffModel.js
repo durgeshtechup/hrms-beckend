@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             unique: true
         },
         employeCode: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         candidateId: {
             type: DataTypes.INTEGER,
@@ -18,34 +18,35 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER
         },
         name: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         gender: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         dateOfBirth: {
             type: DataTypes.DATE
         },
         fatherName: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         motherName: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         maidenName: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         marritalStatus: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         currentAddress: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         permanentAddress: {
-            type: DataTypes.TEXT
+            type: DataTypes.STRING
         },
         // email: {
-        //     type: DataTypes.TEXT
+        //     type: DataTypes.STRING,
+        //     unique: true
 
         // },
         // createdBy: {

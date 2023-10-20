@@ -4,10 +4,12 @@ module.exports = (sequelize, DataTypes) => {
     const Candidateskill = sequelize.define("candidateskill", {
 
         candidateSkillId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         rating: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
         },
         candidateId: {
             type: DataTypes.INTEGER

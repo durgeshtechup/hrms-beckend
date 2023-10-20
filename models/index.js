@@ -33,9 +33,9 @@ const db = {}
 db.sequelize = Sequelize
 db.sequelize = sequelize
 
+db.user = require("./userModel.js")(sequelize, DataTypes)
 db.candidate = require("./candidateModel.js")(sequelize, DataTypes)
 db.staff = require("./staffModel.js")(sequelize, DataTypes)
-db.user = require("./userModel.js")(sequelize, DataTypes)
 db.candidateskills = require("./candidateSkills")(sequelize, DataTypes)
 db.candidatestatus = require("./candidateStatusModel")(sequelize, DataTypes)
 db.department = require("./departmentModel.js")(sequelize, DataTypes)
@@ -50,6 +50,8 @@ db.candidatedocument = require("./candidateDocumentModel.js")(sequelize, DataTyp
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')
+    }).catch(err => {
+        console.log(err);
     })
 
 module.exports = db
