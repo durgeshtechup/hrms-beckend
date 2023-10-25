@@ -2,6 +2,8 @@ const db = require("../models")
 
 // create main model
 const User = db.user
+const Role = db.role
+
 
 //1. create staff
 const addUser = async (req, res) => {
@@ -61,10 +63,15 @@ const getAllUsers = async (req, res) => {
 const getOneUser = async (req, res) => {
     let id = req.params.id
     try {
-        let user = await User.findOne({ where: { id: id } })
+        let user = await User.findOne({ where: { userId: id } })
+        let role = await Role.findOne({ where: { roleId: user.roleId } })
+        let outdata = {
+            user,
+            roleNmae: role.roleName
+        }
         res.status(200).send({
             flag: true,
-            user
+            outdata
         })
     } catch (error) {
         res.status(500).send({

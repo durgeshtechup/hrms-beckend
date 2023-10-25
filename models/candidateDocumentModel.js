@@ -10,16 +10,24 @@ module.exports = (sequelize, DataTypes) => {
         },
         candidateId: {
             type: DataTypes.INTEGER,
+            allowNull: false
+
         },
         fileType: {
             type: DataTypes.STRING,
+            allowNull: false
+
 
         },
         docPath: {
             type: DataTypes.STRING,
+            allowNull: false
+
         },
         docName: {
             type: DataTypes.STRING,
+            allowNull: false
+
         },
         createdBy: {
             type: DataTypes.INTEGER,

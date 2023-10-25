@@ -16,6 +16,7 @@ const upload = multer({ storage: storage })
 const cpUpload = upload.fields([{ name: 'candidatePhoto', maxCount: 1 }, { name: 'resume', maxCount: 1 }, { name: 'others', maxCount: 5 }])
 
 
+
 // api routes
 // router.post("/addCandidate", candidateController.addCandidate)
 router.post("/addCandidate", cpUpload, candidateController.addCandidate)

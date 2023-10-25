@@ -10,9 +10,13 @@ module.exports = (sequelize, DataTypes) => {
         },
         candidateId: {
             type: DataTypes.INTEGER,
+            allowNull: false
+
         },
         statusId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            allowNull: false
+
         },
         remark: {
             type: DataTypes.STRING

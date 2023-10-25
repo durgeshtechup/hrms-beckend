@@ -8,7 +8,13 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true
         },
         employeCode: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: false
+
+        },
+        staffId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         email: {
             type: DataTypes.STRING,
@@ -16,15 +22,19 @@ module.exports = (sequelize, DataTypes) => {
             unique: true
         },
         password: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: false
+
         },
         roleId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            allowNull: false
+
         },
         createdBy: {
-            type: DataTypes.INTEGER
-        }
-        ,
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         updatedBy: {
             type: DataTypes.INTEGER
         }

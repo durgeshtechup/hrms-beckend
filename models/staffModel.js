@@ -4,21 +4,25 @@ module.exports = (sequelize, DataTypes) => {
     const Staff = sequelize.define("staff", {
         staffId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true
+            autoIncrement: true,
+            primaryKey: true
         },
         employeCode: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
         },
         candidateId: {
             type: DataTypes.INTEGER,
-
         },
         roleId: {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            allowNull: false
+
         },
         name: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: false,
         },
         gender: {
             type: DataTypes.STRING
@@ -44,18 +48,26 @@ module.exports = (sequelize, DataTypes) => {
         permanentAddress: {
             type: DataTypes.STRING
         },
-        // email: {
-        //     type: DataTypes.STRING,
-        //     unique: true
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
 
-        // },
-        // createdBy: {
-        //     type: DataTypes.INTEGER
-        // }
-        // ,
-        // updatedBy: {
-        //     type: DataTypes.INTEGER
-        // }
+        },
+        mobile: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        emergencyContact: {
+            type: DataTypes.STRING,
+        },
+        createdBy: {
+            type: DataTypes.INTEGER
+        }
+        ,
+        updatedBy: {
+            type: DataTypes.INTEGER
+        }
 
 
     })

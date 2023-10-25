@@ -13,12 +13,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         name: {
             type: DataTypes.STRING,
+            allowNull: false
+        },
+        mobile: {
+            type: DataTypes.STRING,
+            allowNull: false
 
         },
-        Contact: {
-            type: DataTypes.STRING
-        },
-        jobProfileId: {
+        departmentId: {
             type: DataTypes.INTEGER
         },
         currentCTC: {
@@ -44,18 +46,19 @@ module.exports = (sequelize, DataTypes) => {
         },
         otherInfo: {
             type: DataTypes.STRING
-        }
-        // email: {
-        //     type: DataTypes.STRING
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false
 
-        // },
-        // createdBy: {
-        //     type: DataTypes.INTEGER
-        // }
-        // ,
-        // updatedBy: {
-        //     type: DataTypes.INTEGER
-        // }
+        },
+        createdBy: {
+            type: DataTypes.INTEGER
+        }
+        ,
+        updatedBy: {
+            type: DataTypes.INTEGER
+        }
 
 
     })

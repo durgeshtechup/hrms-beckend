@@ -44,6 +44,8 @@ db.skill = require("./skillsModel.js")(sequelize, DataTypes)
 db.staffdocument = require("./staffdocumentModel.js")(sequelize, DataTypes)
 db.status = require("./statusModel")(sequelize, DataTypes)
 db.candidatedocument = require("./candidateDocumentModel.js")(sequelize, DataTypes)
+db.roleModule = require("./roleModuleModel.js")(sequelize, DataTypes)
+db.module = require("./moduleModel.js")(sequelize, DataTypes)
 
 
 
