@@ -52,6 +52,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
 
         },
+        isActive: {
+            type: DataTypes.STRING,
+            // allowNull: false,
+        },
         createdBy: {
             type: DataTypes.INTEGER
         }

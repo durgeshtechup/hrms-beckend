@@ -21,10 +21,10 @@ const cpUpload = upload.fields([{ name: 'candidatePhoto', maxCount: 1 }, { name:
 // router.post("/addCandidate", candidateController.addCandidate)
 router.post("/addCandidate", cpUpload, candidateController.addCandidate)
 // router.post("/addCandidate", upload.single("candidatePhoto"), candidateController.addCandidate)
-// router.get("/allCandidates", candidateController.getAllCandidates)
+router.get("/allCandidates", candidateController.getAllCandidates)
 router.get("/:id", candidateController.getOneCandidate)
 router.put("/:id", candidateController.updateCandidate)
-router.delete("/:id", candidateController.deleteCandidate)
+router.post("/:id", candidateController.deleteCandidate)
 
 
 module.exports = router

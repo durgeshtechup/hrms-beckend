@@ -32,7 +32,7 @@ router.post("/addStaff", cpUpload, staffController.addStaff)
 router.get("/allStaffs", staffController.getAllStaffs)
 router.get("/:id", staffController.getOneStaff)
 router.put("/:id", staffController.updateStaff)
-router.delete("/:id", staffController.deleteStaff)
+router.post("/:id", staffController.deleteStaff)
 
 
 module.exports = router

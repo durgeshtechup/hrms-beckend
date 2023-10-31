@@ -11,10 +11,57 @@ const RoleModule = db.roleModule
 const Module = db.module
 //1. create staff
 const addStaff = async (req, res) => {
-    const { employeCode, candidateId, roleId, name, email, mobile, createdBy } = req.body
-    const { staffPhoto, aadhar, salarySlip, experience, marksheet, cv, addressProof } = req.files
+
 
     try {
+        if (!req.body) {
+            res.status(400).send({
+                flag: false,
+                message: "Please insert all required fields."
+            })
+
+            return;
+        }
+        const { staffPhoto, aadhar, salarySlip, experience, marksheet, cv, addressProof } = req?.files
+        const {
+            candidateId,
+            employeCode,
+            roleId,
+            name,
+            gender,
+            dateOfBirth,
+            fatherName,
+            motherName,
+            maidenName,
+            marritalStatus,
+            currentAddress,
+            permanentAddress,
+            email,
+            mobile,
+            emergencyContact,
+            createdBy,
+        } = req.body
+        let info = {
+
+
+            employeCode,
+            candidateId,
+            roleId,
+            name,
+            gender,
+            dateOfBirth,
+            fatherName,
+            motherName,
+            maidenName,
+            marritalStatus,
+            currentAddress,
+            permanentAddress,
+            email,
+            mobile,
+            emergencyContact,
+            createdBy,
+
+        }
 
         if (!name || !email || !mobile || !createdBy || !roleId || !employeCode
             // || !staffPhoto || !aadhar || !salarySlip || !experience || !marksheet || !cv || !addressProof
@@ -139,7 +186,7 @@ const addStaff = async (req, res) => {
         }
 
         let allDocs = {}
-        const staff = await Staff.create(req.body)
+        const staff = await Staff.create(info)
         if (staff?.staffId > 0) {
             if (staffPhoto) {
                 allDocs.staffdocumentPhoto = await Staffdocument.create({
@@ -298,11 +345,15 @@ const getAllStaffs = async (req, res) => {
         let staffs = await Staff.findAll()
         res.status(200).send({
             flag: true,
-            outdata: staffs
+            outdata: staffs,
+            totalRecord: staffs?.length
+
         })
+        return;
 
     } catch (err) {
         res.status(501).send(err)
+        return;
     }
 
 }
@@ -312,16 +363,20 @@ const getOneStaff = async (req, res) => {
     let id = req.params.id
     try {
         let staff = await Staff.findOne({ where: { staffId: id } })
+        let staffdocuments = await Staffdocument.findOne({ where: { staffId: id } })
+
         res.status(200).send({
             flag: true,
-            outdata: staff
+            outdata: { staff, staffdocuments }
         })
+        return;
     } catch (error) {
         res.status(500).send({
             flag: false,
             message: "something went wrong!",
             error
         })
+        return;
 
     }
 }
@@ -330,18 +385,58 @@ const getOneStaff = async (req, res) => {
 
 const updateStaff = async (req, res) => {
     let id = req.params.id
+    let {
+        candidateId,
+        employeCode,
+        roleId,
+        name,
+        gender,
+        dateOfBirth,
+        fatherName,
+        motherName,
+        maidenName,
+        marritalStatus,
+        currentAddress,
+        permanentAddress,
+        email,
+        mobile,
+        emergencyContact,
+        updatedBy,
+    } = req.body
+    let info = {
+        candidateId,
+        employeCode,
+        roleId,
+        name,
+        gender,
+        dateOfBirth,
+        fatherName,
+        motherName,
+        maidenName,
+        marritalStatus,
+        currentAddress,
+        permanentAddress,
+        email,
+        mobile,
+        emergencyContact,
+        updatedBy
+    }
     try {
-        const staff = await Staff.update(req.body, { where: { staffId: id } })
+        const staff = await Staff.update(info, { where: { staffId: id } })
+        console.log("Staff", staff)
         if (staff == 1) {
             res.status(200).send({
                 flag: true,
                 message: "Staff details updated!"
             })
+            return;
         } else {
             res.status(200).send({
                 flag: false,
                 message: "Something went wrong!"
             })
+            return;
+
         }
 
     } catch (error) {
@@ -350,29 +445,96 @@ const updateStaff = async (req, res) => {
             message: "Something went wrong!",
             error
         })
+        return;
 
     }
 }
 
 //5. delete staff by id
 
+// const deleteStaff = async (req, res) => {
+//     let id = req.params.id
+//     try {
+//         await Staff.destroy({ where: { staffId: id } })
+//         res.status(200).send({
+//             flag: true,
+//             message: "Staff details is deleted."
+//         })
+//         return;
+//     } catch (error) {
+//         res.status(500).send({
+//             flag: false,
+//             message: "Something went wrong!",
+//             error
+//         })
+//         return;
+//     }
+// }
 const deleteStaff = async (req, res) => {
     let id = req.params.id
+    const { isActive, updatedBy, candidateId } = req.body
+    let info = {
+        isActive,
+        updatedBy,
+
+    }
+
     try {
-        await Staff.destroy({ where: { staffId: id } })
-        res.status(200).send({
-            flag: true,
-            message: "Staff details is deleted."
-        })
+        if (!updatedBy) {
+            res.status(400).send({
+                flag: false,
+
+            })
+            return;
+        }
+        const staff = await Staff.update(info, { where: { staffId: id } })
+
+        if (staff == 1) {
+            if (isActive == "yes") {
+                res.status(200).send({
+                    flag: true,
+                    // user,
+                    message: "Candidate details is recovered."
+                })
+                return;
+            }
+            if (isActive == "no") {
+                res.status(200).send({
+                    flag: true,
+                    // user,
+                    message: "Candidate details is deleted."
+                })
+                return;
+            }
+            res.status(404).send({
+                flag: false,
+                message: "Something went wrong!"
+
+            })
+            return;
+
+
+        } else {
+            res.status(404).send({
+                flag: false,
+                message: "Something went wrong!"
+
+            })
+            return;
+        }
+
+
+
     } catch (error) {
         res.status(500).send({
             flag: false,
             message: "Something went wrong!",
             error
         })
+        return;
+
     }
 }
-
 
 module.exports = {
     addStaff,

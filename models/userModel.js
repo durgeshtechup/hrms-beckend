@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
 
         },
+        // isActive: {
+        //     type: DataTypes.STRING,
+        //     // allowNull: false,
+        //     default: "yes"
+        // },
         createdBy: {
             type: DataTypes.INTEGER,
             allowNull: false

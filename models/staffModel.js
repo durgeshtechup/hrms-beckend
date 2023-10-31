@@ -61,6 +61,10 @@ module.exports = (sequelize, DataTypes) => {
         emergencyContact: {
             type: DataTypes.STRING,
         },
+        isActive: {
+            type: DataTypes.STRING,
+
+        },
         createdBy: {
             type: DataTypes.INTEGER
         }

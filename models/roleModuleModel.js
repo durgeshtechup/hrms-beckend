@@ -7,6 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+
+        },
         roleId: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -26,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
 
+        },
+        createdBy: {
+            type: DataTypes.INTEGER
+        }
+        ,
+        updatedBy: {
+            type: DataTypes.INTEGER
         }
     })
     return RoleModule
