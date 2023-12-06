@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         profileId: {
             type: DataTypes.INTEGER,
+
+
         },
         profileName: {
             type: DataTypes.STRING

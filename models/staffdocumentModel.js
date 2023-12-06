@@ -8,14 +8,26 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
-        employeCode: {
+        staffId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+
+        },
+        docType: {
             type: DataTypes.STRING,
+            allowNull: false
+
+
         },
         docPath: {
             type: DataTypes.STRING,
+            allowNull: false
+
         },
         docName: {
             type: DataTypes.STRING,
+            allowNull: false
+
         },
         createdBy: {
             type: DataTypes.INTEGER,

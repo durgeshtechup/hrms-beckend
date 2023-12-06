@@ -6,13 +6,12 @@ const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 const path = require("path")
 // const multer = require('multer')
-
 const app = express()
 
-var corOptions = {
-    origin: "https://localhost:8081"
+var corsOptions = {
+    origin: 'http://localhost:62583',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-
 
 
 //middleware
@@ -31,7 +30,7 @@ var corOptions = {
 // })
 // const upload = multer({ storage: storage });
 
-app.use(cors(corOptions))
+app.use(cors(corsOptions))
 // app.use(bodyParser.text({ type: '/' }));
 app.use(express.json())
 app.use(cookieParser())
@@ -50,21 +49,29 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(morgan('dev'));
 
 
-cloudinary.config({
-    cloud_name: "dgiye4daz",
-    api_key: "449121857626744",
-    api_secret: "xzjwfM_K105S1wdd8e1PPOLoVX0"
-});
+// cloudinary.config({
+//     cloud_name: "dgiye4daz",
+//     api_key: "449121857626744",
+//     api_secret: "xzjwfM_K105S1wdd8e1PPOLoVX0"
+// });
 
 
 //routers
 const CandidateRouter = require("./routes/CandidateRouter")
 const StaffRouter = require("./routes/StaffRouter")
 const UserRouter = require("./routes/userRouter")
+const SkillRouter = require("./routes/skillRouter.js")
+const RoleRouter = require("./routes/roleRouter.js")
+const StatusRouter = require("./routes/statusRouter.js")
+const RoleModuleRouter = require("./routes/roleModuleRouter.js")
 
 app.use("/api/candidate", CandidateRouter)
 app.use("/api/staff", StaffRouter)
 app.use("/api/user", UserRouter)
+app.use("/api/skill", SkillRouter)
+app.use("/api/role", RoleRouter)
+app.use("/api/status", StatusRouter)
+app.use("/api/roleModule", RoleModuleRouter)
 
 // testing api
 
@@ -78,6 +85,6 @@ const PORT = process.env.PORT || 8088
 
 //server
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`)
 })

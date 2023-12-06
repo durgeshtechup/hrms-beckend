@@ -1,33 +1,44 @@
 
 
 module.exports = (sequelize, DataTypes) => {
-    const Candidateskill = sequelize.define("candidateskill", {
-
-        candidateSkillId: {
+    const RoleModule = sequelize.define("rolemodule", {
+        roleModuleId: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
-        rating: {
-            type: DataTypes.STRING,
-        },
-        candidateId: {
+        userId: {
             type: DataTypes.INTEGER,
             allowNull: false
 
         },
-        skillId: {
+        roleId: {
             type: DataTypes.INTEGER,
+            allowNull: false
+
+        },
+        moduleId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+
+        },
+        isViewed: {
+            type: DataTypes.STRING,
+            allowNull: false
+
+        },
+        isEdited: {
+            type: DataTypes.STRING,
             allowNull: false
 
         },
         createdBy: {
             type: DataTypes.INTEGER
-        },
+        }
+        ,
         updatedBy: {
             type: DataTypes.INTEGER
         }
     })
-
-    return Candidateskill
+    return RoleModule
 }
