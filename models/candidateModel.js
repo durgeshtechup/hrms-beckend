@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
 
         },
+        gender: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         departmentId: {
             type: DataTypes.INTEGER
         },
@@ -50,7 +54,6 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false
-
         },
         isActive: {
             type: DataTypes.STRING,
