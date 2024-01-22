@@ -30,5 +30,10 @@ router.get("/allStaffs", staffController.getAllStaffs);
 router.get("/:id", staffController.getOneStaff);
 router.put("/:id", cpUpload, staffController.updateStaff);
 router.post("/:id", staffController.deleteStaff);
+router.get(
+  "/anniversary/staff-work-anniversary",
+  staffController.AniversaryStaff
+);
+router.get("/birthday/staff-birthday", staffController.BirthAniversaryStaff);
 
 module.exports = router;

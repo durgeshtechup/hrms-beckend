@@ -13,6 +13,7 @@ const Staffdocument = db.staffdocument;
 const User = db.user;
 const RoleModule = db.roleModule;
 const Module = db.module;
+const moment = require("moment");
 
 let date = Date.now();
 
@@ -57,6 +58,8 @@ const addStaff = async (req, res) => {
       mobile,
       emergencyContact,
       createdBy,
+      departmentId,
+      dateOfJoining,
     } = req.body;
     let info = {
       employeCode: employeCodeUUID,
@@ -64,7 +67,7 @@ const addStaff = async (req, res) => {
       roleId,
       name,
       gender,
-      dateOfBirth,
+      dateOfBirth: moment(new Date(dateOfBirth)).format("YYYY-MM-DD"),
       fatherName,
       motherName,
       maidenName,
@@ -74,6 +77,8 @@ const addStaff = async (req, res) => {
       email,
       mobile,
       emergencyContact,
+      departmentId,
+      dateOfJoining: moment(new Date(dateOfJoining)).format("YYYY-MM-DD"),
       createdBy,
       isActive: "yes",
     };
@@ -394,6 +399,7 @@ const getAllStaffs = async (req, res) => {
           },
         });
       } else {
+        // currentPage = 1;
         staffs = await Staff.findAndCountAll({
           where: {
             name: { [Op.like]: `%${searchString}%` },
@@ -477,7 +483,9 @@ const updateStaff = async (req, res) => {
     email,
     mobile,
     emergencyContact,
+    dateOfJoining,
     updatedBy,
+    departmentId,
   } = req.body;
   let info = {
     candidateId,
@@ -485,7 +493,9 @@ const updateStaff = async (req, res) => {
     roleId,
     name,
     gender,
-    dateOfBirth,
+
+    dateOfBirth: moment(new Date(dateOfBirth)).format("YYYY-MM-DD"),
+
     fatherName,
     motherName,
     maidenName,
@@ -495,7 +505,9 @@ const updateStaff = async (req, res) => {
     email,
     mobile,
     emergencyContact,
+    dateOfJoining: moment(new Date(dateOfJoining)).format("YYYY-MM-DD"),
     updatedBy,
+    departmentId,
   };
 
   try {
@@ -632,26 +644,7 @@ const updateStaff = async (req, res) => {
   }
 };
 
-//5. delete staff by id
-
-// const deleteStaff = async (req, res) => {
-//     let id = req.params.id
-//     try {
-//         await Staff.destroy({ where: { staffId: id } })
-//         res.status(200).send({
-//             flag: true,
-//             message: "Staff details is deleted."
-//         })
-//         return;
-//     } catch (error) {
-//         res.status(500).send({
-//             flag: false,
-//             message: "Something went wrong!",
-//             error
-//         })
-//         return;
-//     }
-// }
+//5. delete or change staff status details
 const deleteStaff = async (req, res) => {
   let id = req.params.id;
   const { isActive, updatedBy, candidateId } = req.body;
@@ -708,10 +701,84 @@ const deleteStaff = async (req, res) => {
   }
 };
 
+const AniversaryStaff = async (req, res) => {
+  // const { email, mobile } = req.body;
+  let TodayDate = new Date();
+
+  TodayDate.setFullYear(TodayDate.getFullYear() - 1);
+
+  let cDate = moment(TodayDate).format("YYYY-MM-DD");
+  // console.log("TodayDate", cDate);
+
+  // let StaffCreatedDate = moment(createdAt).format("YYYY-MM-DD");
+
+  let staffs;
+  try {
+    staffs = await Staff.findAndCountAll({
+      where: {
+        dateOfJoining: new Date(cDate),
+      },
+    });
+
+    if (staffs?.count > 0) {
+      res.status(200).send({
+        flag: true,
+        message: "Today is the Work Anniversary of some staff!",
+        outdata: { staffs: staffs?.rows },
+        totalRecord: staffs?.count,
+      });
+    } else {
+      res.status(200).send({
+        flag: false,
+        message: "",
+      });
+    }
+
+    return;
+  } catch (err) {
+    res.status(501).send(err);
+    return;
+  }
+};
+
+const BirthAniversaryStaff = async (req, res) => {
+  // const { email, mobile } = req.body;
+  let cDate = moment(new Date()).format("YYYY-MM-DD");
+
+  let staffs;
+  try {
+    staffs = await Staff.findAndCountAll({
+      where: {
+        dateOfBirth: new Date(cDate),
+      },
+    });
+    if (staffs?.count > 0) {
+      res.status(200).send({
+        flag: true,
+        message: "Today is the Birthday of some staff!",
+        outdata: { staffs: staffs?.rows },
+        totalRecord: staffs?.count,
+      });
+    } else {
+      res.status(200).send({
+        flag: false,
+        message: "",
+      });
+    }
+
+    return;
+  } catch (err) {
+    res.status(501).send(err);
+    return;
+  }
+};
+
 module.exports = {
   addStaff,
   getAllStaffs,
   getOneStaff,
   updateStaff,
   deleteStaff,
+  AniversaryStaff,
+  BirthAniversaryStaff,
 };

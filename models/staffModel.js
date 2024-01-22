@@ -60,6 +60,10 @@ module.exports = (sequelize, DataTypes) => {
     emergencyContact: {
       type: DataTypes.STRING,
     },
+    dateOfJoining: {
+      type: DataTypes.DATE,
+    },
+
     isActive: {
       type: DataTypes.STRING,
     },

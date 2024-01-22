@@ -28,5 +28,10 @@ router.get("/:id", candidateController.getOneCandidate);
 router.put("/:id", cpUpload, candidateController.updateCandidate);
 router.post("/:id", candidateController.deleteCandidate);
 router.get("/candidate-status/:id", candidateController.getCandidateStatus);
+router.put(
+  "/update-candidate-status/update",
+  candidateController.updateCandidateStatus
+);
+router.post("/verify/verify-candidate", candidateController.VerifyCandidate);
 
 module.exports = router;

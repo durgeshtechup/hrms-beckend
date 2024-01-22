@@ -28,8 +28,8 @@ const db = {};
 db.sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.user = require("./userModel.js")(sequelize, DataTypes);
 db.candidate = require("./candidateModel.js")(sequelize, DataTypes);
+db.user = require("./userModel.js")(sequelize, DataTypes);
 db.staff = require("./staffModel.js")(sequelize, DataTypes);
 db.candidateskills = require("./candidateSkills")(sequelize, DataTypes);
 db.candidatestatus = require("./candidateStatusModel")(sequelize, DataTypes);
@@ -46,6 +46,7 @@ db.roleModule = require("./roleModuleModel.js")(sequelize, DataTypes);
 db.module = require("./moduleModel.js")(sequelize, DataTypes);
 
 db.sequelize
+  // .sync({ force: false, alter: true })
   .sync({ force: false })
   .then(() => {
     console.log("yes re-sync done!");

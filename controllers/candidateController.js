@@ -9,14 +9,18 @@ const User = db.user;
 const RoleModule = db.roleModule;
 const Module = db.module;
 const Candidatestatus = db.candidatestatus;
-
+const { v4: uuid } = require("uuid");
+const moment = require("moment");
 // main work
 
 //1. create candidate
 const addCandidate = async (req, res, next) => {
+  const unique_id = uuid();
+
+  let applicationNumberUUID = unique_id.slice(0, 10);
   let info = {
     // candidateId: req.body.candidateId,
-    applicationNumber: req.body.applicationNumber,
+    applicationNumber: applicationNumberUUID,
     name: req.body.name,
     mobile: req.body.mobile,
     jobProfileId: req.body.jobProfileId,
@@ -31,6 +35,9 @@ const addCandidate = async (req, res, next) => {
     createdBy: req.body.createdBy,
     email: req.body.email,
     gender: req.body.gender,
+    isActive: "yes",
+    departmentId: req.body.departmentId,
+    dateOfApplication: moment(req.body.dateOfApplication).format("YYYY-MM-DD"),
   };
 
   try {
@@ -42,12 +49,13 @@ const addCandidate = async (req, res, next) => {
       return false;
     }
     const { candidatePhoto, resume, others } = req?.files;
-    const { createdBy, name, mobile, rating, skillId } = req.body;
+    const { createdBy, name, mobile, rating, skillId, dateOfApplication } =
+      req.body;
     // console.log("Files", candidatePhoto[0]?.path)
 
     console.log("response", info);
 
-    if (!name || !mobile || !resume || !createdBy) {
+    if (!name || !mobile || !resume || !createdBy || !dateOfApplication) {
       if (candidatePhoto) {
         fs.unlink(candidatePhoto[0]?.path, function (err) {
           if (err) return console.log(err);
@@ -120,6 +128,7 @@ const addCandidate = async (req, res, next) => {
         statusId: 6,
         remark: "",
         createdBy,
+        dateOfStatus: moment(dateOfApplication).format("YYYY-MM-DD"),
       });
     }
 
@@ -204,67 +213,121 @@ const addCandidate = async (req, res, next) => {
 //2. get all candidates
 const getAllCandidates = async (req, res) => {
   console.log("req.query", req.query);
-  const { isActive, searchString } = req.query;
+  let { isActive, searchString, endDate, startDate } = req.query;
   let { currentPage } = req.query;
   if (currentPage == null || currentPage == undefined) {
     currentPage = 0;
   }
+  if (!isActive) {
+    isActive = "";
+  }
+  if (!searchString) {
+    searchString = "";
+  }
+  if (!startDate) {
+    startDate = moment(new Date("1994-01-01")).format("YYYY-MM-DD");
+  }
+  if (!endDate) {
+    let cDate = new Date();
+    let year = cDate.getFullYear() + 10;
+    let month = cDate.getMonth();
+    let date = cDate.getDate();
+    endDate = moment(new Date(year, month, date)).format("YYYY-MM-DD");
+  }
   let candidates;
   try {
-    if (!searchString && !isActive) {
+    // candidates = await Candidate.findAndCountAll({
+    //   where: {
+    //     name: { [Op.like]: `%${searchString}%` },
+    //     isActive,
+    //   },
+    //   offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //   limit: Number(process.env.PAGE_LIMIT),
+    // });
+
+    // if (!searchString && !isActive) {
+    //   if (currentPage == 0) {
+    //     candidates = await Candidate.findAndCountAll({});
+    //   } else {
+    //     candidates = await Candidate.findAndCountAll({
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // } else if (isActive && searchString) {
+    //   if (currentPage == 0) {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //         isActive,
+    //       },
+    //     });
+    //   } else {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //         isActive,
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // } else if (searchString) {
+    //   if (currentPage == 0) {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //       },
+    //     });
+    //   } else {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // } else if (isActive) {
+    //   if (currentPage == 0) {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         isActive,
+    //       },
+    //     });
+    //   } else {
+    //     candidates = await Candidate.findAndCountAll({
+    //       where: {
+    //         isActive,
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // }
+
+    if (true) {
       if (currentPage == 0) {
-        candidates = await Candidate.findAndCountAll({});
+        candidates = await Candidate.findAndCountAll({
+          where: {
+            name: { [Op.like]: `%${searchString ? searchString : ""}%` },
+            isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
+            dateOfApplication: {
+              [Op.gte]: new Date(startDate),
+              [Op.lte]: new Date(endDate),
+              // [Op.lte]: { [Op.like]: `%${endDate ? new Date(endDate) : ""}%` },
+            },
+          },
+        });
       } else {
         candidates = await Candidate.findAndCountAll({
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
-    } else if (isActive && searchString) {
-      if (currentPage == 0) {
-        candidates = await Candidate.findAndCountAll({
           where: {
-            name: { [Op.like]: `%${searchString}%` },
-            isActive,
-          },
-        });
-      } else {
-        candidates = await Candidate.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${searchString}%` },
-            isActive,
-          },
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
-    } else if (searchString) {
-      if (currentPage == 0) {
-        candidates = await Candidate.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${searchString}%` },
-          },
-        });
-      } else {
-        candidates = await Candidate.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${searchString}%` },
-          },
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
-    } else if (isActive) {
-      if (currentPage == 0) {
-        candidates = await Candidate.findAndCountAll({
-          where: {
-            isActive,
-          },
-        });
-      } else {
-        candidates = await Candidate.findAndCountAll({
-          where: {
-            isActive,
+            name: { [Op.like]: `%${searchString ? searchString : ""}%` },
+            isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
+            dateOfApplication: {
+              [Op.gte]: new Date(startDate),
+              [Op.lte]: new Date(endDate),
+            },
           },
           offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
           limit: Number(process.env.PAGE_LIMIT),
@@ -275,7 +338,7 @@ const getAllCandidates = async (req, res) => {
     // try {
     //     let candidates = await Candidate.findAll()
     // let candidateSkills = await CandidateSkill.findAll()
-    // console.log("candidateSkills", candidateSkills)
+    console.log("candidates", candidates);
     res.status(200).send({
       flag: true,
       outdata: { candidates: candidates?.rows },
@@ -294,11 +357,11 @@ const getOneCandidate = async (req, res) => {
   let id = req.params.id;
   try {
     let candidate = await Candidate.findOne({ where: { candidateId: id } });
-    let candidatedocuments = await Candidatedocument.findOne({
+    let candidatedocuments = await Candidatedocument.findAll({
       where: { candidateId: id },
     });
 
-    let candidateSkills = await CandidateSkill.findOne({
+    let candidateSkills = await CandidateSkill.findAll({
       where: { candidateId: id },
     });
     res.status(200).send({
@@ -321,7 +384,7 @@ const getOneCandidate = async (req, res) => {
 const updateCandidate = async (req, res) => {
   let id = req.params.id;
   const {
-    applicationNumber,
+    // applicationNumber,
     name,
     mobile,
     departmentId,
@@ -337,24 +400,28 @@ const updateCandidate = async (req, res) => {
     isActive,
     updatedBy,
     skillId,
+    gender,
+    dateOfApplication,
   } = req.body;
   let info = {
-    applicationNumber,
-    name,
+    // applicationNumber,
+    name: name,
     mobile,
     departmentId,
     currentCTC,
     expectedCTC,
     location,
     isRelocate,
-    reasonForJobChange,
+    reasonForJobChange: reasonForJobChange,
     noticePeriod,
     experience,
-    otherInfo,
-    email,
+    otherInfo: otherInfo,
+    email: email,
     isActive,
     updatedBy,
     skillId,
+    gender: gender,
+    dateOfApplication,
   };
   try {
     const candidate = await Candidate.update(info, {
@@ -471,7 +538,7 @@ const deleteCandidate = async (req, res) => {
 const getCandidateStatus = async (req, res) => {
   let id = req.params.id;
   try {
-    let candidatestatus = await Candidatestatus.findOne({
+    let candidatestatus = await Candidatestatus.findAll({
       where: { candidateId: id },
     });
     res.status(200).send({
@@ -489,6 +556,130 @@ const getCandidateStatus = async (req, res) => {
   }
 };
 
+const updateCandidateStatus = async (req, res) => {
+  console.log("statuastatuastatuastatuastatuastatua", req?.body);
+
+  const {
+    candidateId,
+    candidateStatusId,
+    statusId,
+    remark,
+    updatedBy,
+    dateOfStatus,
+  } = req.body;
+  if (
+    !candidateId ||
+    // !candidateStatusId ||
+    !statusId ||
+    !updatedBy ||
+    !dateOfStatus
+  ) {
+    res.status(400).send({
+      flag: true,
+      message: "Please insert required fields!",
+    });
+    return;
+  }
+  let info = {
+    statusId,
+    remark,
+    updatedBy,
+    dateOfStatus,
+    // updatedBy,
+    // updatedAt: new Date(),
+  };
+
+  try {
+    const candidateStatusResponse = await Candidatestatus.create({
+      candidateId,
+      statusId,
+      remark,
+      updatedBy,
+      dateOfStatus: moment(dateOfStatus).format("YYYY-MM-DD"),
+    });
+
+    if (candidateStatusResponse?.candidateStatusId > 0) {
+      res.status(200).send({
+        flag: true,
+        message: "Candidate status updated!",
+        outdata: {
+          candidateStatus: candidateStatusResponse,
+        },
+      });
+      return;
+    } else {
+      res.status(200).send({
+        flag: false,
+        message: "Something went wrong!",
+      });
+      return;
+    }
+  } catch (error) {
+    res.status(500).send({
+      flag: false,
+      message: "Something went wrong!",
+      error,
+    });
+    return;
+  }
+};
+
+const VerifyCandidate = async (req, res) => {
+  const { email, mobile } = req.body;
+  let candidate;
+  try {
+    if (email) {
+      candidate = await Candidate.findAndCountAll({
+        where: {
+          email: email,
+        },
+      });
+
+      if (candidate?.count > 0) {
+        res.status(200).send({
+          flag: false,
+          message: "Email already exist!",
+          // outdata: { candidate: candidate?.rows },
+          // totalRecord: candidate?.count,
+        });
+      } else {
+        res.status(200).send({
+          flag: true,
+          message: "",
+        });
+      }
+    } else if (mobile) {
+      candidate = await Candidate.findAndCountAll({
+        where: {
+          mobile: mobile,
+        },
+      });
+      if (candidate?.count > 0) {
+        res.status(200).send({
+          flag: false,
+          message: "Mobile already exist!",
+          // outdata: { candidate: candidate?.rows },
+          // totalRecord: candidate?.count,
+        });
+      } else {
+        res.status(200).send({
+          flag: true,
+          message: "",
+        });
+      }
+    } else {
+      res.status(400).send({
+        flag: false,
+        message: "Something went wrong!",
+      });
+    }
+    return;
+  } catch (err) {
+    res.status(501).send(err);
+    return;
+  }
+};
+
 module.exports = {
   addCandidate,
   getAllCandidates,
@@ -496,4 +687,6 @@ module.exports = {
   updateCandidate,
   deleteCandidate,
   getCandidateStatus,
+  updateCandidateStatus,
+  VerifyCandidate,
 };
