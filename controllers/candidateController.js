@@ -37,6 +37,7 @@ const addCandidate = async (req, res, next) => {
     gender: req.body.gender,
     isActive: "yes",
     departmentId: req.body.departmentId,
+    OtherSkill: req.body.OtherSkill,
     dateOfApplication: moment(req.body.dateOfApplication).format("YYYY-MM-DD"),
   };
 
@@ -49,8 +50,15 @@ const addCandidate = async (req, res, next) => {
       return false;
     }
     const { candidatePhoto, resume, others } = req?.files;
-    const { createdBy, name, mobile, rating, skillId, dateOfApplication } =
-      req.body;
+    const {
+      createdBy,
+      name,
+      mobile,
+      rating,
+      skillId,
+      dateOfApplication,
+      OtherSkill,
+    } = req.body;
     // console.log("Files", candidatePhoto[0]?.path)
 
     console.log("response", info);
@@ -137,6 +145,7 @@ const addCandidate = async (req, res, next) => {
         candidateId: candidate?.candidateId,
         rating,
         skillId,
+        OtherSkill,
         createdBy,
       });
       if (candidatePhoto) {
@@ -402,6 +411,8 @@ const updateCandidate = async (req, res) => {
     skillId,
     gender,
     dateOfApplication,
+    OtherSkill,
+    rating,
   } = req.body;
   let info = {
     // applicationNumber,
@@ -428,6 +439,18 @@ const updateCandidate = async (req, res) => {
       where: { candidateId: id },
     });
     const { candidatePhoto, resume } = req?.files;
+
+    await CandidateSkill.update(
+      {
+        rating,
+        skillId,
+        OtherSkill,
+        updatedBy,
+      },
+      {
+        where: { candidateId: id },
+      }
+    );
 
     if (1) {
       if (candidatePhoto) {
