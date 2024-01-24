@@ -11,6 +11,7 @@ const Module = db.module;
 const Candidatestatus = db.candidatestatus;
 const { v4: uuid } = require("uuid");
 const moment = require("moment");
+const sendEmail = require("../Utills/emailService");
 // main work
 
 //1. create candidate
@@ -131,6 +132,25 @@ const addCandidate = async (req, res, next) => {
 
     const candidate = await Candidate.create(info);
     if (candidate?.candidateId > 0) {
+      const currentUser = await User.findOne({ where: { userId: createdBy } });
+      sendEmail({
+        subject: "New Candidate Added",
+        html: `<div>
+            <p>Hello Sir</p>
+            <p>
+              I would like to inform you that a new candidate <b>${info?.name}</b> (
+              ${info?.email}) is added by ${currentUser.email}, please take follow
+              up and keep updating its status.
+            </p>
+            <br  />
+            <br />
+            
+            <p>Thanks and regards,</p>
+            <p>${currentUser.email} </p>
+          </div>`,
+        to: process.env.FROM_EMAIL,
+        from: process.env.EMAIL,
+      });
       await Candidatestatus.create({
         candidateId: candidate?.candidateId,
         statusId: 6,
@@ -318,6 +338,7 @@ const getAllCandidates = async (req, res) => {
     if (true) {
       if (currentPage == 0) {
         candidates = await Candidate.findAndCountAll({
+          order: [["createdAt", "DESC"]],
           where: {
             name: { [Op.like]: `%${searchString ? searchString : ""}%` },
             isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
@@ -330,6 +351,8 @@ const getAllCandidates = async (req, res) => {
         });
       } else {
         candidates = await Candidate.findAndCountAll({
+          order: [["createdAt", "DESC"]],
+
           where: {
             name: { [Op.like]: `%${searchString ? searchString : ""}%` },
             isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
@@ -408,17 +431,19 @@ const updateCandidate = async (req, res) => {
     email,
     isActive,
     updatedBy,
-    skillId,
     gender,
     dateOfApplication,
+    skillId,
     OtherSkill,
     rating,
   } = req.body;
   let info = {
+    // candidateId: req.body.candidateId,
     // applicationNumber,
     name: name,
     mobile,
-    departmentId,
+    jobProfileId: req.body.jobProfileId,
+
     currentCTC,
     expectedCTC,
     location,
@@ -427,12 +452,17 @@ const updateCandidate = async (req, res) => {
     noticePeriod,
     experience,
     otherInfo: otherInfo,
-    email: email,
-    isActive,
     updatedBy,
-    skillId,
+
+    email: email,
     gender: gender,
-    dateOfApplication,
+
+    isActive,
+    // skillId,
+    // OtherSkill,
+    departmentId,
+
+    dateOfApplication: moment(dateOfApplication).format("YYYY-MM-DD"),
   };
   try {
     const candidate = await Candidate.update(info, {
@@ -454,7 +484,8 @@ const updateCandidate = async (req, res) => {
 
     if (1) {
       if (candidatePhoto) {
-        await Candidatedocument.update(
+        let isUpdated;
+        isUpdated = await Candidatedocument.update(
           {
             docName: candidatePhoto[0]?.filename,
             docPath: candidatePhoto[0]?.path,
@@ -462,9 +493,19 @@ const updateCandidate = async (req, res) => {
           },
           { where: { candidateId: id, fileType: "candidatePhoto" } }
         );
+        if (isUpdated[0] == 0) {
+          await Candidatedocument.create({
+            candidateId: id,
+            fileType: "candidatePhoto",
+            docName: candidatePhoto[0]?.filename,
+            docPath: candidatePhoto[0]?.path,
+            updatedBy,
+          });
+        }
       }
       if (resume) {
-        await Candidatedocument.update(
+        let isUpdated;
+        isUpdated = await Candidatedocument.update(
           {
             docName: resume[0]?.filename,
             docPath: resume[0]?.path,
@@ -472,6 +513,15 @@ const updateCandidate = async (req, res) => {
           },
           { where: { candidateId: id, fileType: "candidateResume" } }
         );
+        if (isUpdated[0] == 0) {
+          await Candidatedocument.create({
+            candidateId: id,
+            fileType: "candidateResume",
+            docName: resume[0]?.filename,
+            docPath: resume[0]?.path,
+            updatedBy,
+          });
+        }
       }
     }
 

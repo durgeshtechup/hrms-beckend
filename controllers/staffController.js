@@ -14,6 +14,7 @@ const User = db.user;
 const RoleModule = db.roleModule;
 const Module = db.module;
 const moment = require("moment");
+const sendEmail = require("../Utills/emailService");
 
 let date = Date.now();
 
@@ -212,6 +213,26 @@ const addStaff = async (req, res) => {
     let allDocs = {};
     const staff = await Staff.create(info);
     if (staff?.staffId > 0) {
+      const currentUser = await User.findOne({ where: { userId: createdBy } });
+
+      sendEmail({
+        subject: "New Staff Added",
+        html: `<div>
+            <p>Hello Sir</p>
+            <p>
+              I would like to inform you that a new staff ${info?.name} (
+              ${info?.email}) is added by ${currentUser.email}.
+            </p>
+            <br  />
+            <br />
+            
+            <p>Thanks and regards,</p>
+            <p>${currentUser.email} </p>
+          </div>`,
+        to: process.env.FROM_EMAIL,
+        from: process.env.EMAIL,
+      });
+
       if (staffPhoto) {
         allDocs.staffdocumentPhoto = await Staffdocument.create({
           staffId: staff?.staffId,
@@ -362,70 +383,103 @@ const getAllStaffs = async (req, res) => {
   }
   let staffs;
   try {
-    if (!searchString && !isActive) {
-      if (currentPage == 0) {
-        staffs = await Staff.findAndCountAll({});
-      } else {
-        staffs = await Staff.findAndCountAll({
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
+    // if (!searchString && !isActive) {
+    //   if (currentPage == 0) {
+    //     staffs = await Staff.findAndCountAll({});
+    //   } else {
+    //     staffs = await Staff.findAndCountAll({
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
 
-      // staffs = await Staff.findAll();
-    } else if (isActive && searchString) {
+    //   // staffs = await Staff.findAll();
+    // } else if (isActive && searchString) {
+    //   if (currentPage == 0) {
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //         isActive,
+    //       },
+    //     });
+    //   } else {
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //         isActive,
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // } else if (searchString) {
+    //   if (currentPage == 0) {
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //       },
+    //     });
+    //   } else {
+    //     // currentPage = 1;
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         name: { [Op.like]: `%${searchString}%` },
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // } else if (isActive) {
+    //   if (currentPage == 0) {
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         isActive,
+    //       },
+    //     });
+    //   } else {
+    //     staffs = await Staff.findAndCountAll({
+    //       where: {
+    //         isActive,
+    //       },
+    //       offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
+    //       limit: Number(process.env.PAGE_LIMIT),
+    //     });
+    //   }
+    // }
+
+    // staffs = await Staff.findAll();
+
+    if (true) {
       if (currentPage == 0) {
         staffs = await Staff.findAndCountAll({
+          order: [["createdAt", "DESC"]],
           where: {
-            name: { [Op.like]: `%${searchString}%` },
-            isActive,
+            name: { [Op.like]: `%${searchString ? searchString : ""}%` },
+            isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
+            // dateOfApplication: {
+            //   [Op.gte]: new Date(startDate),
+            //   [Op.lte]: new Date(endDate),
+            //   // [Op.lte]: { [Op.like]: `%${endDate ? new Date(endDate) : ""}%` },
+            // },
           },
         });
       } else {
         staffs = await Staff.findAndCountAll({
+          order: [["createdAt", "DESC"]],
+
           where: {
-            name: { [Op.like]: `%${searchString}%` },
-            isActive,
-          },
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
-    } else if (searchString) {
-      if (currentPage == 0) {
-        staffs = await Staff.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${searchString}%` },
-          },
-        });
-      } else {
-        // currentPage = 1;
-        staffs = await Staff.findAndCountAll({
-          where: {
-            name: { [Op.like]: `%${searchString}%` },
-          },
-          offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
-          limit: Number(process.env.PAGE_LIMIT),
-        });
-      }
-    } else if (isActive) {
-      if (currentPage == 0) {
-        staffs = await Staff.findAndCountAll({
-          where: {
-            isActive,
-          },
-        });
-      } else {
-        staffs = await Staff.findAndCountAll({
-          where: {
-            isActive,
+            name: { [Op.like]: `%${searchString ? searchString : ""}%` },
+            isActive: { [Op.like]: `%${isActive ? isActive : ""}%` },
+            // dateOfApplication: {
+            //   [Op.gte]: new Date(startDate),
+            //   [Op.lte]: new Date(endDate),
+            // },
           },
           offset: Number(process.env.PAGE_OFFSET * (currentPage - 1)),
           limit: Number(process.env.PAGE_LIMIT),
         });
       }
     }
-    // staffs = await Staff.findAll();
 
     res.status(200).send({
       flag: true,
@@ -528,7 +582,8 @@ const updateStaff = async (req, res) => {
     let allDocs = {};
 
     if (staffPhoto) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: staffPhoto[0]?.filename,
           docPath: staffPhoto[0]?.path,
@@ -536,10 +591,23 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "staffPhoto" } }
       );
+      if (isUpdated[0] == 0) {
+        if (isUpdated[0] == 0) {
+          await Staffdocument.create({
+            staffId: id,
+            docType: "staffPhoto",
+            docName: staffPhoto[0]?.filename,
+            docPath: staffPhoto[0]?.path,
+            updatedBy,
+          });
+        }
+      }
       // console.log("staffPhoto", staffPhoto);
     }
     if (aadhar) {
-      await Staffdocument.update(
+      let isUpdated;
+
+      isUpdated = await Staffdocument.update(
         {
           docName: aadhar[0]?.filename,
           docPath: aadhar[0]?.path,
@@ -548,9 +616,19 @@ const updateStaff = async (req, res) => {
 
         { where: { staffId: id, docType: "aadhar" } }
       );
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "aadhar",
+          docName: aadhar[0]?.filename,
+          docPath: aadhar[0]?.path,
+          updatedBy,
+        });
+      }
     }
     if (salarySlip) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: salarySlip[0]?.filename,
           docPath: salarySlip[0]?.path,
@@ -558,9 +636,19 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "salarySlip" } }
       );
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "salarySlip",
+          docName: salarySlip[0]?.filename,
+          docPath: salarySlip[0]?.path,
+          updatedBy,
+        });
+      }
     }
     if (experience) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: experience[0]?.filename,
           docPath: experience[0]?.path,
@@ -568,9 +656,20 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "experience" } }
       );
+
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "experience",
+          docName: experience[0]?.filename,
+          docPath: experience[0]?.path,
+          updatedBy,
+        });
+      }
     }
     if (marksheet) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: marksheet[0]?.filename,
           docPath: marksheet[0]?.path,
@@ -578,9 +677,19 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "marksheet" } }
       );
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "marksheet",
+          docName: marksheet[0]?.filename,
+          docPath: marksheet[0]?.path,
+          updatedBy,
+        });
+      }
     }
     if (cv) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: cv[0]?.filename,
           docPath: cv[0]?.path,
@@ -588,10 +697,20 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "cv" } }
       );
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "cv",
+          docName: cv[0]?.filename,
+          docPath: cv[0]?.path,
+          updatedBy,
+        });
+      }
     }
 
     if (addressProof) {
-      await Staffdocument.update(
+      let isUpdated;
+      isUpdated = await Staffdocument.update(
         {
           docName: addressProof[0]?.filename,
           docPath: addressProof[0]?.path,
@@ -599,6 +718,15 @@ const updateStaff = async (req, res) => {
         },
         { where: { staffId: id, docType: "addressProof" } }
       );
+      if (isUpdated[0] == 0) {
+        await Staffdocument.create({
+          staffId: id,
+          docType: "addressProof",
+          docName: addressProof[0]?.filename,
+          docPath: addressProof[0]?.path,
+          updatedBy,
+        });
+      }
     }
 
     // await transaction.commit();
@@ -607,7 +735,7 @@ const updateStaff = async (req, res) => {
       res.status(200).send({
         flag: true,
         message: "Staff details updated!",
-        allDocs,
+        // allDocs,
       });
       return;
     } else {
@@ -743,15 +871,26 @@ const AniversaryStaff = async (req, res) => {
 
 const BirthAniversaryStaff = async (req, res) => {
   // const { email, mobile } = req.body;
-  let cDate = moment(new Date()).format("YYYY-MM-DD");
+  let TodayDate = new Date();
+
+  TodayDate.setFullYear(TodayDate.getFullYear());
+
+  let cDate = moment(TodayDate).format("YYYY-MM-DD");
+  // let cDate = moment(new Date()).format("YYYY-MM-DD");
+  console.log("cDate", cDate);
 
   let staffs;
   try {
     staffs = await Staff.findAndCountAll({
       where: {
-        dateOfBirth: new Date(cDate),
+        dateOfBirth: { [Op.like]: `%${new Date(cDate)}%` },
       },
+      // attributes: [
+      //   [sequelize.fn("DATE", sequelize.col("dateOfBirth")), 23],
+      //   [sequelize.fn("MONTH", sequelize.col("dateOfBirth")), 1],
+      // ],
     });
+    console.log("staffs", staffs);
     if (staffs?.count > 0) {
       res.status(200).send({
         flag: true,
@@ -773,6 +912,60 @@ const BirthAniversaryStaff = async (req, res) => {
   }
 };
 
+//Verify staff email and mobile
+const VerifyStaff = async (req, res) => {
+  const { email, mobile } = req.body;
+  let staff;
+  try {
+    if (email) {
+      staff = await Staff.findAndCountAll({
+        where: {
+          email: email,
+        },
+      });
+
+      if (staff?.count > 0) {
+        res.status(200).send({
+          flag: false,
+          message: "Email already exist!",
+          // outdata: { candidate: candidate?.rows },
+          // totalRecord: candidate?.count,
+        });
+      } else {
+        res.status(200).send({
+          flag: true,
+          message: "",
+        });
+      }
+    } else if (mobile) {
+      staff = await Staff.findAndCountAll({
+        where: {
+          mobile: mobile,
+        },
+      });
+      if (staff?.count > 0) {
+        res.status(200).send({
+          flag: false,
+          message: "Mobile already exist!",
+        });
+      } else {
+        res.status(200).send({
+          flag: true,
+          message: "",
+        });
+      }
+    } else {
+      res.status(400).send({
+        flag: false,
+        message: "Something went wrong!",
+      });
+    }
+    return;
+  } catch (err) {
+    res.status(501).send(err);
+    return;
+  }
+};
 module.exports = {
   addStaff,
   getAllStaffs,
@@ -781,4 +974,5 @@ module.exports = {
   deleteStaff,
   AniversaryStaff,
   BirthAniversaryStaff,
+  VerifyStaff,
 };

@@ -9,10 +9,12 @@ const Module = db.module;
 
 const Staff = db.staff;
 const { Op } = require("sequelize");
+const sendEmail = require("../Utills/emailService");
 
 //1. create user
 const addUser = async (req, res) => {
   const modules = await Module.findAll();
+  const { email, createdBy } = req.body;
   try {
     const user = await User.create(req.body);
     // const user = {};
@@ -32,6 +34,25 @@ const addUser = async (req, res) => {
     console.log("inputData", inputData);
     let roleModule;
     if (user?.userId > 0) {
+      const currentUser = await User.findOne({ where: { userId: createdBy } });
+
+      sendEmail({
+        subject: "A new user created for HRMS",
+        html: `<div>
+            <p>Hello Sir</p>
+            <p>
+              I would like to inform you that a new User ( ${email}) is created 
+               by ${currentUser?.email}.
+            </p>
+            <br  />
+            <br />
+            
+            <p>Thanks and regards,</p>
+            <p>${currentUser?.email} </p>
+          </div>`,
+        to: process.env.FROM_EMAIL,
+        from: process.env.EMAIL,
+      });
       modules.forEach((element) => {
         inputData.push({
           roleModuleId: 0,
@@ -216,7 +237,7 @@ const updateUser = async (req, res) => {
     employeCode,
     staffId,
     email,
-    // password,
+    password,
     roleId,
     updatedBy,
     isActive,
@@ -224,6 +245,25 @@ const updateUser = async (req, res) => {
   try {
     const user = await User.update(info, { where: { userId: id } });
     if (user == 1) {
+      const currentUser = await User.findOne({ where: { userId: updatedBy } });
+
+      sendEmail({
+        subject: "User Details Updated",
+        html: `<div>
+            <p>Hello Sir</p>
+            <p>
+              I would like to inform you that User Details is updated for this user ${email} (
+               by ${currentUser.email}.
+            </p>
+            <br  />
+            <br />
+            
+            <p>Thanks and regards,</p>
+            <p>${currentUser.email} </p>
+          </div>`,
+        to: process.env.FROM_EMAIL,
+        from: process.env.EMAIL,
+      });
       res.status(200).send({
         flag: true,
         message: "User details updated!",

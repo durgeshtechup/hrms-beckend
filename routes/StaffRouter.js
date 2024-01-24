@@ -35,5 +35,6 @@ router.get(
   staffController.AniversaryStaff
 );
 router.get("/birthday/staff-birthday", staffController.BirthAniversaryStaff);
+router.post("/verify/verify-staff", staffController.VerifyStaff);
 
 module.exports = router;

@@ -31,6 +31,8 @@ var corsOptions = {
 //     }
 // })
 // const upload = multer({ storage: storage });
+const dotenv = require("dotenv");
+dotenv.config({ path: "./config/config.env" });
 
 app.use(cors());
 // app.use(bodyParser.text({ type: '/' }));
@@ -115,12 +117,44 @@ app.use("/api/department", verifyToken, DepartmentRouter);
 
 // const PORT = process.env.PORT || 8088
 
+// var transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     // host: "smtp.gmail.com",
+//     // port: 587,
+//     // authentication: "plain",
+//     type: OAuth2,
+//     user: process.env.EMAIL,
+//     pass: "Durgesh@123",
+//     // scope: "https://mail.google.com/",
+//     // token_type: "Bearer",
+//     // expires_in: 3599,
+//     clientId: process.env.CLIENT_ID,
+//     clientSecret: process.env.CLIENT_SECRET,
+//     access_token:
+//       "ya29.a0AfB_byCmzvBV-3ZmY0sHvSsuAlumyNyB4Srj3NbxtYsiF4fdxG7fDNRdYHA2d-snLZtw2tv4zKMgNpTFrwS8nA23vvGpTGBqtOzU3LiOmLPpYyNRLkguQUuffnGdqCpXkymBZzg6dDnb14yDmzXtSMMYdxmOYvU7ymYkaCgYKAaASAQ4SFQHGX2MirQr6jEy2KtT_tJZ2Jl5MxA0171",
+//     refreshToken: process.env.REFRESH_TOKEN,
+//   },
+// });
+
+// var mailOptions = {
+//   from: "durgesh.usefor.techup@gmail.com",
+//   to: "durgesh.techup@gmail.com",
+//   subject: "Sending Email using Node.js",
+//   text: "That was easy!",
+// };
+
+// transporter.sendMail(mailOptions, function (error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log("Email sent: " + info.response);
+//   }
+// });
 //server
 // const PORT = require("./config/config.env")
 // console.log("PORT", PORT.PORT)
-const dotenv = require("dotenv");
 //Config
-dotenv.config({ path: "./config/config.env" });
 app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
