@@ -6,6 +6,9 @@
             "use": "@vercel/node"
         }
     ],
+    
+  "installCommand": "npm install mysql2"
+
     "routes": [
         {
             "src": "/(.*)",
