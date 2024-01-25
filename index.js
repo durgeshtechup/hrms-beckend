@@ -155,6 +155,7 @@ app.use("/api/department", verifyToken, DepartmentRouter);
 // const PORT = require("./config/config.env")
 // console.log("PORT", PORT.PORT)
 //Config
-app.listen(process.env.PORT, "0.0.0.0", () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+const port = process.env.PORT||8088
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server is running on port ${port}`);
 });
