@@ -7,7 +7,7 @@
         }
     ],
     
-  "installCommand": "npm install mysql2"
+  "installCommand": "npm install mysql2",
 
     "routes": [
         {
